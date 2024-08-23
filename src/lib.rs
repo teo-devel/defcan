@@ -106,7 +106,7 @@ macro_rules! inject {
     ) => {
         impl From<$from> for $to {
             fn from(value: $from) -> Self {
-                Self { $($tof: value.$fromf(),)* }
+                Self { $($tof: value.$fromf().into(),)* }
             }
         }
     }
