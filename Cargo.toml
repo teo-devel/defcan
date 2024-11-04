@@ -5,5 +5,4 @@ edition = "2021"
 
 [dependencies]
 bitvec = "1.0.1"
-j1939 = "0.1.33"
 socketcan = "3.3.0"

@@ -1,5 +1,4 @@
 pub extern crate bitvec;
-pub extern crate j1939;
 pub extern crate socketcan;
 
 pub use bitvec::prelude::*;
@@ -21,10 +20,10 @@ macro_rules! j1939_message {
             fn try_from(frame: CanDataFrame) -> Result<Self, Self::Error> {
                 let id = match frame.id() {
                     Id::Standard(_) => return Err(()),
-                    Id::Extended(id) => j1939::Id::new(id.as_raw()),
+                    Id::Extended(id) => id.as_raw() >> 8 & 0xFF_FF, // pdu format 2
                 };
 
-                if id.pgn_raw() == Self::PGN {
+                if id == Self::PGN {
                     Ok(Self(frame))
                 } else {
                     Err(())
@@ -64,10 +63,10 @@ macro_rules! j1939_messages {
             fn try_from(frame: CanDataFrame) -> Result<Self, Self::Error> {
                 let id = match frame.id() {
                     Id::Standard(_) => return Err(()),
-                    Id::Extended(id) => j1939::Id::new(id.as_raw()),
+                    Id::Extended(id) => id.as_raw() >> 8 & 0xFF_FF,
                 };
 
-                let message = match id.pgn_raw() {
+                let message = match id {
                     $($name::PGN => Message::$name($name(frame)),)*
                     _ => return Err(()),
                 };
